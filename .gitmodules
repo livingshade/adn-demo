@@ -1,6 +1,7 @@
 [submodule "phoenix"]
 	path = phoenix
 	url = https://github.com/livingshade/phoenix.git
+	branch = adn
 [submodule "adn"]
 	path = adn
 	url = https://github.com/livingshade/app-defined-networks.git
