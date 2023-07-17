@@ -24,15 +24,8 @@ config_string = \'\'\'
 if __name__ == "__main__":
     with open("input", "r") as f:
         chain = f.read().strip()
-    
-    os.chdir("./phoenix")
-    os.system("git switch adn")
-    os.system("git pull")
-    os.chdir("..")
-    
+        
     os.chdir("./adn/compiler")    
-    os.system("git switch main")
-    os.system("git pull")
     res = subprocess.run(["python", "main.py", "-e", chain, "--mrpc_dir", "../../phoenix/experimental/mrpc"], capture_output=True)
     os.chdir("../..")
     print(res.stdout)

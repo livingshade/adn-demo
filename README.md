@@ -10,8 +10,10 @@ git switch adn
 git pull
 # install other dependencies to run phoenix
 cd ../adn
-git switch graph
+git switch main
 git pull
+cd compiler
+bash ./install.sh
 ```
 
 ## Startup (3 Seperate Terminal)
