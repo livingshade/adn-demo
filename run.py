@@ -25,14 +25,24 @@ if __name__ == "__main__":
     with open("input", "r") as f:
         chain = f.read().strip()
         
+    print("Graph Sepc: ", chain)
+    chain = chain.replace("()", "")
+    
+    print("Using default protobuf...")
+    # res = subprocess.run(["python", "main.py", "-e", chain, "--mrpc_dir", "../../phoenix/experimental/mrpc"], capture_output=True, text=True)
     os.chdir("./adn/compiler")    
-    res = subprocess.run(["python", "main.py", "-e", chain, "--mrpc_dir", "../../phoenix/experimental/mrpc"], capture_output=True)
+    os.system("PYTHONPATH=$PYTHONPATH:$(pwd):$(dirname $(pwd)) python main.py -e '" + chain + "' --mrpc_dir ../../phoenix/experimental/mrpc")
     os.chdir("../..")
-    print(res.stdout)
+
+    # print("Running ADN Compiler...")
+    # print(res.stdout)
+    # print(res.stderr)
+    # print("Code generated!")
     
     engine_name = [i.strip() for i in chain.split("->")]
-    print("Engines: ", engine_name)
 
+    
+    print("Deploying to mRPC...")
     engines = []
     for engine in engine_name:
         name = f"gen_{engine}_{len(engines)}"
@@ -45,7 +55,7 @@ if __name__ == "__main__":
     plugins = [f"generated/plugin/{i}" for i in engines]
     
     dep = [(f"phoenix-api-policy-{i}", {"path": f"generated/api/{i}"}) for i in engines]
-    print(api, plugins)
+
 
     os.system("cp ./phoenix/experimental/mrpc/Cargo.toml ./Cargo.toml")
     with open("Cargo.toml", "r") as f:
@@ -61,24 +71,30 @@ if __name__ == "__main__":
         f.write(tomli_w.dumps(cargo_toml))
     os.system("cp ./Cargo2.toml ./phoenix/experimental/mrpc/Cargo.toml")
     
-    os.system("cp ./phoenix/experimental/mrpc/load-mrpc-plugins.toml ./load-mrpc-plugins.toml")
-    
-    with open("load-mrpc-plugins.toml", "a") as f:
+    with open("load-mrpc-plugins-gen.toml", "a") as f:
         for e in engines:
             app = modify_load(e)
             f.write(app)
     
-    os.system("cp ./load-mrpc-plugins.toml ./phoenix/experimental/mrpc/load-mrpc-plugins.toml")
+    os.system("cp ./load-mrpc-plugins-gen.toml ./phoenix/experimental/mrpc/generated/load-mrpc-plugins-gen.toml")
+    
     
     os.chdir("./phoenix/experimental/mrpc")
     for e in engines:
-        os.system(f"cargo make build-mrpc-plugin-single {e}")
-        
-    os.system("cargo make deploy-plugins")
+        print("Compiling mRPC Plugin: ", e)
+        res = subprocess.run(["cargo", "make", "build-mrpc-plugin-single", e], capture_output=True)
+        #os.system(f"cargo make build-mrpc-plugin-single {e}")
+    
+    print("Installing mRPC Plugin...")    
+    res = subprocess.run(["cargo", "make", "deploy-plugins"], capture_output=True)
     
     os.chdir("../..")
-    os.system("cargo run --release --bin upgrade -- --config experimental/mrpc/load-mrpc-plugins.toml")
+
+    res = subprocess.run(["cargo", "run", "--release" ,"--bin", "upgrade", "--", "--config", "./experimental/mrpc/generated/load-mrpc-plugins-gen.toml"], capture_output=True)
+
+    print("Deployed to mRPC!")
     
-    print("Finish Loading Generated Plugins!")
-    
+   # print("Cleaning up...")
+    #os.chdir("..")
+    #os.system("cp ./Cargo.toml ./phoenix/experimental/mrpc/Cargo.toml")
     

@@ -1,3 +1,4 @@
 Cargo.toml
 Cargo2.toml
 load-mrpc-plugins.toml
+load-mrpc-plugins-gen.toml
