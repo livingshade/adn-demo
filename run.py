@@ -33,7 +33,7 @@ if __name__ == "__main__":
     os.chdir("./adn/compiler")    
     os.system("git switch main")
     os.system("git pull")
-    res = subprocess.run(["python", "main.py", "-e", chain], capture_output=True)
+    res = subprocess.run(["python", "main.py", "-e", chain, "--mrpc_dir", "../../phoenix/experimental/mrpc"], capture_output=True)
     os.chdir("../..")
     print(res.stdout)
     
