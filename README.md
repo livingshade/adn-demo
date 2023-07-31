@@ -58,6 +58,7 @@ Then you can attach engines, for example:
 
 ```bash
 cd phoenix/experimental/mrpc
+cargo run --release --bin upgrade -- --config experimental/mrpc/load-mrpc-plugins.toml
 # assume the pid of client is 666725
 # attach
 cargo run --release --bin addonctl -- --config experimental/mrpc/generated/addonctl/gen_fault_0_attach.toml --pid 666725 --sid 1
