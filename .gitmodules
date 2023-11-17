@@ -4,4 +4,4 @@
 	branch = adn
 [submodule "adn"]
 	path = adn
-	url = https://github.com/livingshade/app-defined-networks.git
+	url = https://github.com/livingshade/adn-compiler.git
